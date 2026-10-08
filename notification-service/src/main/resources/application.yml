@@ -1,0 +1,30 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: payflow-notification-service
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:payflow}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${DB_USER:payflow}
+    password: ${DB_PASSWORD:payflow-local}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: false
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
+    consumer:
+      group-id: payflow-notifications
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.value.default.type: com.playflow.notification.PaymentEvent
+        spring.json.trusted.packages: com.playflow.notification
+        spring.json.use.type.headers: false
+app:
+  kafka:
+    payment-topic: payflow.payment.events

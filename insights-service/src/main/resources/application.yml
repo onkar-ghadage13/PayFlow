@@ -1,0 +1,29 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: payflow-insights-service
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:payflow}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${DB_USER:payflow}
+    password: ${DB_PASSWORD:payflow-local}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
+    consumer:
+      group-id: payflow-insights
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.value.default.type: com.playflow.insights.PaymentEvent
+        spring.json.trusted.packages: com.playflow.insights
+        spring.json.use.type.headers: false
+app:
+  jwt:
+    secret: ${PAYFLOW_JWT_SECRET:local-development-secret-key-change-before-deployment-2026}
+  kafka:
+    payment-topic: payflow.payment.events
+  gemini:
+    api-key: ${GEMINI_API_KEY:}
+    model: ${GEMINI_MODEL:gemini-3.8-flash}
